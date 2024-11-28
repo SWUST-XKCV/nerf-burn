@@ -2415,7 +2415,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nerf-candle"
+name = "nerf-burn"
 version = "0.1.0"
 dependencies = [
  "burn",
