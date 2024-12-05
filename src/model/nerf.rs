@@ -13,9 +13,9 @@ pub struct NerfModel<B: Backend> {
     linear6: Linear<B>,
     linear7: Linear<B>,
     linear8: Linear<B>,
-    view_linear: Linear<B>,
-    alpha_linear: Linear<B>,
-    rgb_linear: Linear<B>,
+    linear_view: Linear<B>,
+    linear_alpha: Linear<B>,
+    linear_rgb: Linear<B>,
     relu: Relu,
     sigmoid: Sigmoid,
 }
@@ -46,10 +46,10 @@ impl<B: Backend> NerfModel<B> {
         let x = self.relu.forward(x);
         let x = self.linear8.forward(x);
         let x = self.relu.forward(x); // optional
-        let alpha = self.alpha_linear.forward(x.clone());
-        let x = self.view_linear.forward(Tensor::cat(vec![x, input_dir], 1));
+        let alpha = self.linear_alpha.forward(x.clone());
+        let x = self.linear_view.forward(Tensor::cat(vec![x, input_dir], 1));
         let x = self.relu.forward(x);
-        let x = self.rgb_linear.forward(x);
+        let x = self.linear_rgb.forward(x);
         let rgb = self.sigmoid.forward(x);
 
         Tensor::cat(vec![rgb, alpha], 1)
@@ -76,13 +76,13 @@ impl NerfModelConfig {
             linear6: LinearConfig::new(self.width_linear, self.width_linear).init(device),
             linear7: LinearConfig::new(self.width_linear, self.width_linear).init(device),
             linear8: LinearConfig::new(self.width_linear, self.width_linear).init(device),
-            alpha_linear: LinearConfig::new(self.width_linear, 1).init(device),
-            view_linear: LinearConfig::new(
-                self.width_linear + 1 + self.d_input_dir,
+            linear_alpha: LinearConfig::new(self.width_linear, 1).init(device),
+            linear_view: LinearConfig::new(
+                self.width_linear + self.d_input_dir,
                 self.width_linear / 2,
             )
             .init(device),
-            rgb_linear: LinearConfig::new(self.width_linear / 2, 3).init(device),
+            linear_rgb: LinearConfig::new(self.width_linear / 2, 3).init(device),
             relu: Relu::new(),
             sigmoid: Sigmoid::new(),
         }
