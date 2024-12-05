@@ -9,4 +9,3 @@ mod test {
         let dataset_train = ParticleDataset::train(root);
     }
 }
-
